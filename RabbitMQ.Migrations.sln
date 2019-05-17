@@ -3,7 +3,37 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQ.Migrations", "RabbitMQ.Migrations\RabbitMQ.Migrations.csproj", "{B3A91844-9A3E-4472-A42D-9EE6DAACBEA6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQ.Migrations.Tests", "RabbitMQ.Migrations.Tests\RabbitMQ.Migrations.Tests.csproj", "{926A59FC-D400-4E0D-8D51-1395228D352D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1D0BBC8A-70CE-4DC5-A85D-190E46256E34}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		RabbitMQ.Migrations.snk = RabbitMQ.Migrations.snk
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMQ.Migrations.Demo", "RabbitMQ.Migrations.Demo\RabbitMQ.Migrations.Demo.csproj", "{041364B3-6C04-4A90-AF62-C83ED7E21850}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B3A91844-9A3E-4472-A42D-9EE6DAACBEA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3A91844-9A3E-4472-A42D-9EE6DAACBEA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3A91844-9A3E-4472-A42D-9EE6DAACBEA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3A91844-9A3E-4472-A42D-9EE6DAACBEA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{926A59FC-D400-4E0D-8D51-1395228D352D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{926A59FC-D400-4E0D-8D51-1395228D352D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{926A59FC-D400-4E0D-8D51-1395228D352D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{926A59FC-D400-4E0D-8D51-1395228D352D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{041364B3-6C04-4A90-AF62-C83ED7E21850}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{041364B3-6C04-4A90-AF62-C83ED7E21850}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{041364B3-6C04-4A90-AF62-C83ED7E21850}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{041364B3-6C04-4A90-AF62-C83ED7E21850}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
