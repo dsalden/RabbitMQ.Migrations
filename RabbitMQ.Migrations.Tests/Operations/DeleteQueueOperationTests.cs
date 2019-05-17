@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RabbitMQ.Client;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RabbitMQ.Fakes;
 using RabbitMQ.Migrations.Operations;
 

@@ -1,11 +1,10 @@
-﻿using System.Linq;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Fakes;
-using RabbitMQ.Fakes.models;
 using RabbitMQ.Migrations.Objects;
+using System.Linq;
+using System.Text;
 
 namespace RabbitMQ.Migrations.Tests
 {
