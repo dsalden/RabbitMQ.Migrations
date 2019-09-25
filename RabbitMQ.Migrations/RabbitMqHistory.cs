@@ -70,7 +70,7 @@ namespace RabbitMQ.Migrations
                 var messageText = JsonConvert.SerializeObject(allAppliedMigrations);
                 var messageProps = model.CreateBasicProperties();
                 messageProps.Persistent = true;
-                model.BasicPublish("", Constants.HistoryQueue, messageProps, Encoding.UTF8.GetBytes(messageText));
+                model.BasicPublish(Constants.DefaultExchange, Constants.HistoryQueue, messageProps, Encoding.UTF8.GetBytes(messageText));
             }
         }
     }

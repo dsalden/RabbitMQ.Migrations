@@ -77,5 +77,16 @@ namespace RabbitMQ.Migrations
 
             return bindQueueOperation;
         }
+
+        public MoveDataOperation MoveData(string sourceQueueName, string destinationQueueName)
+        {
+            var moveDataOperation = new MoveDataOperation()
+                .SetSourceQueueName(sourceQueueName)
+                .SetDestinationQueueName(destinationQueueName);
+
+            Operations.Add(moveDataOperation);
+
+            return moveDataOperation;
+        }
     }
 }
