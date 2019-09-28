@@ -78,15 +78,26 @@ namespace RabbitMQ.Migrations
             return bindQueueOperation;
         }
 
-        public MoveDataOperation MoveData(string sourceQueueName, string destinationQueueName)
+        public MoveDataToQueueOperation MoveDataToQueue(string sourceQueueName, string destinationQueueName)
         {
-            var moveDataOperation = new MoveDataOperation()
+            var moveDataToQueueOperation = new MoveDataToQueueOperation()
                 .SetSourceQueueName(sourceQueueName)
                 .SetDestinationQueueName(destinationQueueName);
 
-            Operations.Add(moveDataOperation);
+            Operations.Add(moveDataToQueueOperation);
 
-            return moveDataOperation;
+            return moveDataToQueueOperation;
+        }
+
+        public MoveDataToExchangeOperation MoveDataToExchange(string sourceQueueName, string destinationExchangeName)
+        {
+            var moveDataToExchangeOperation = new MoveDataToExchangeOperation()
+                .SetSourceQueueName(sourceQueueName)
+                .SetDestinationExchangeName(destinationExchangeName);
+
+            Operations.Add(moveDataToExchangeOperation);
+
+            return moveDataToExchangeOperation;
         }
     }
 }

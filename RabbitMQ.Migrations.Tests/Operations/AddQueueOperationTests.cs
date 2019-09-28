@@ -101,7 +101,7 @@ namespace RabbitMQ.Migrations.Tests.Operations
             Assert.IsTrue(queue.IsDurable);
             Assert.IsTrue(queue.IsExclusive);
             Assert.AreEqual(1, queue.Arguments.Count);
-            Assert.IsTrue(queue.Arguments.Contains("foo"));
+            Assert.IsTrue(queue.Arguments.ContainsKey("foo"));
             Assert.AreEqual("foo-bar", queue.Arguments["foo"]);
             Assert.AreEqual(1, queue.Bindings.Count);
             var binding = queue.Bindings.First();

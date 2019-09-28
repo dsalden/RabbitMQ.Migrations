@@ -150,25 +150,25 @@ namespace RabbitMQ.Migrations.Tests.Operations
             Assert.AreEqual(1, server.Queues.Count);
             var queue = server.Queues.Values.First();
             Assert.AreEqual(10, queue.Arguments.Count);
-            Assert.IsTrue(queue.Arguments.Contains("x-message-ttl"));
+            Assert.IsTrue(queue.Arguments.ContainsKey("x-message-ttl"));
             Assert.AreEqual(5000, queue.Arguments["x-message-ttl"]);
-            Assert.IsTrue(queue.Arguments.Contains("x-expires"));
+            Assert.IsTrue(queue.Arguments.ContainsKey("x-expires"));
             Assert.AreEqual(15000, queue.Arguments["x-expires"]);
-            Assert.IsTrue(queue.Arguments.Contains("x-max-length"));
+            Assert.IsTrue(queue.Arguments.ContainsKey("x-max-length"));
             Assert.AreEqual(10000, queue.Arguments["x-max-length"]);
-            Assert.IsTrue(queue.Arguments.Contains("x-max-length-bytes"));
+            Assert.IsTrue(queue.Arguments.ContainsKey("x-max-length-bytes"));
             Assert.AreEqual(10000, queue.Arguments["x-max-length-bytes"]);
-            Assert.IsTrue(queue.Arguments.Contains("x-overflow"));
+            Assert.IsTrue(queue.Arguments.ContainsKey("x-overflow"));
             Assert.AreEqual("drop-head", queue.Arguments["x-overflow"]);
-            Assert.IsTrue(queue.Arguments.Contains("x-dead-letter-exchange"));
+            Assert.IsTrue(queue.Arguments.ContainsKey("x-dead-letter-exchange"));
             Assert.AreEqual("foo", queue.Arguments["x-dead-letter-exchange"]);
-            Assert.IsTrue(queue.Arguments.Contains("x-dead-letter-routing-key"));
+            Assert.IsTrue(queue.Arguments.ContainsKey("x-dead-letter-routing-key"));
             Assert.AreEqual("bla", queue.Arguments["x-dead-letter-routing-key"]);
-            Assert.IsTrue(queue.Arguments.Contains("x-max-priority"));
+            Assert.IsTrue(queue.Arguments.ContainsKey("x-max-priority"));
             Assert.AreEqual(10, queue.Arguments["x-max-priority"]);
-            Assert.IsTrue(queue.Arguments.Contains("x-queue-mode"));
+            Assert.IsTrue(queue.Arguments.ContainsKey("x-queue-mode"));
             Assert.AreEqual("lazy", queue.Arguments["x-queue-mode"]);
-            Assert.IsTrue(queue.Arguments.Contains("x-queue-master-locator"));
+            Assert.IsTrue(queue.Arguments.ContainsKey("x-queue-master-locator"));
             Assert.AreEqual("server123", queue.Arguments["x-queue-master-locator"]);
         }
     }
