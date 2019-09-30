@@ -1,4 +1,5 @@
 ﻿using RabbitMQ.Client;
+using System.Text;
 
 namespace RabbitMQ.Migrations.Operations
 {
@@ -15,7 +16,9 @@ namespace RabbitMQ.Migrations.Operations
             {
                 // get routingKey from props header original routingKey or use routingKey from message itself
                 var props = message.BasicProperties;
-                var routingKey = props.Headers.ContainsKey(_originalRoutingKey) ? props.Headers[_originalRoutingKey].ToString() : message.RoutingKey;
+                var routingKey = props.Headers.ContainsKey(_originalRoutingKey)
+                    ? Encoding.UTF8.GetString(props.Headers[_originalRoutingKey] as byte[])
+                    : message.RoutingKey;
 
                 model.BasicPublish(DestinationExchangeName, routingKey, props, message.Body);
                 model.BasicAck(message.DeliveryTag, false);
