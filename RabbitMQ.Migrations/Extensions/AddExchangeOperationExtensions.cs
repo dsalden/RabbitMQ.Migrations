@@ -6,6 +6,8 @@ namespace RabbitMQ.Migrations.Extensions
     {
         public static AddExchangeOperation SetAlternativeExchange(this AddExchangeOperation operation, string value)
         {
+            Guard.ArgumentNotNull(nameof(operation), operation);
+
             return operation.AddArgument("alternate-exchange", value);
         }
     }

@@ -2,7 +2,7 @@
 {
     public interface IRabbitMqMigrator
     {
-        void UpdateModel(string prefix);
-        void RevertAll(string prefix);
+        void UpdateModel(string prefix = null);
+        void RevertAll(string prefix = null);
     }
 }

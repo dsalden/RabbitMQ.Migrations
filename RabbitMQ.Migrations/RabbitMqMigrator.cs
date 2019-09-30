@@ -14,13 +14,15 @@ namespace RabbitMQ.Migrations
 
         public RabbitMqMigrator(IConnectionFactory connectionFactory, IRabbitMqHistory rabbitMqHistory)
         {
+            Guard.ArgumentNotNull(nameof(rabbitMqHistory), rabbitMqHistory);
+
             _connectionFactory = connectionFactory;
             _rabbitMqHistory = rabbitMqHistory;
 
             _rabbitMqHistory.Init();
         }
 
-        public void UpdateModel(string prefix)
+        public void UpdateModel(string prefix = null)
         {
             //Find all unapplied migrations and apply using up operations
             //Update model with all unapplied migrations
@@ -44,7 +46,7 @@ namespace RabbitMQ.Migrations
             }
         }
 
-        public void RevertAll(string prefix)
+        public void RevertAll(string prefix = null)
         {
             //Find all applied migrations and rollback using down operations
             //Update model with all unapplied migrations

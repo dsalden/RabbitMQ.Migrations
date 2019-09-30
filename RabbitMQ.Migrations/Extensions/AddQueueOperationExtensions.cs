@@ -10,6 +10,8 @@ namespace RabbitMQ.Migrations.Extensions
         /// </summary>
         public static AddQueueOperation SetMessageTimeToLive(this AddQueueOperation operation, int value)
         {
+            Guard.ArgumentNotNull(nameof(operation), operation);
+
             return operation.AddArgument("x-message-ttl", value);
         }
 
@@ -19,6 +21,8 @@ namespace RabbitMQ.Migrations.Extensions
         /// </summary>
         public static AddQueueOperation SetAutoExpire(this AddQueueOperation operation, int value)
         {
+            Guard.ArgumentNotNull(nameof(operation), operation);
+
             return operation.AddArgument("x-expires", value);
         }
 
@@ -28,6 +32,8 @@ namespace RabbitMQ.Migrations.Extensions
         /// </summary>
         public static AddQueueOperation SetMaxLength(this AddQueueOperation operation, int value)
         {
+            Guard.ArgumentNotNull(nameof(operation), operation);
+
             return operation.AddArgument("x-max-length", value);
         }
 
@@ -37,6 +43,8 @@ namespace RabbitMQ.Migrations.Extensions
         /// </summary>
         public static AddQueueOperation SetMaxLengthBytes(this AddQueueOperation operation, int value)
         {
+            Guard.ArgumentNotNull(nameof(operation), operation);
+
             return operation.AddArgument("x-max-length-bytes", value);
         }
 
@@ -47,6 +55,8 @@ namespace RabbitMQ.Migrations.Extensions
         /// </summary>
         public static AddQueueOperation SetOverflowBehaviour(this AddQueueOperation operation, string value)
         {
+            Guard.ArgumentNotNull(nameof(operation), operation);
+
             return operation.AddArgument("x-overflow", value);
         }
 
@@ -56,6 +66,8 @@ namespace RabbitMQ.Migrations.Extensions
         /// </summary>
         public static AddQueueOperation SetDeadLetterExchange(this AddQueueOperation operation, string value)
         {
+            Guard.ArgumentNotNull(nameof(operation), operation);
+
             return operation.AddArgument("x-dead-letter-exchange", value);
         }
 
@@ -65,6 +77,8 @@ namespace RabbitMQ.Migrations.Extensions
         /// </summary>
         public static AddQueueOperation SetDeadLetterRoutingKey(this AddQueueOperation operation, string value)
         {
+            Guard.ArgumentNotNull(nameof(operation), operation);
+
             return operation.AddArgument("x-dead-letter-routing-key", value);
         }
 
@@ -74,6 +88,8 @@ namespace RabbitMQ.Migrations.Extensions
         /// </summary>
         public static AddQueueOperation SetMaxPriority(this AddQueueOperation operation, int value)
         {
+            Guard.ArgumentNotNull(nameof(operation), operation);
+
             return operation.AddArgument("x-max-priority", value);
         }
 
@@ -84,6 +100,8 @@ namespace RabbitMQ.Migrations.Extensions
         /// </summary>
         public static AddQueueOperation SetLazyMode(this AddQueueOperation operation)
         {
+            Guard.ArgumentNotNull(nameof(operation), operation);
+
             return operation.AddArgument("x-queue-mode", "lazy");
         }
 
@@ -93,6 +111,8 @@ namespace RabbitMQ.Migrations.Extensions
         /// </summary>
         public static AddQueueOperation SetMasterLocation(this AddQueueOperation operation, string value)
         {
+            Guard.ArgumentNotNull(nameof(operation), operation);
+
             return operation.AddArgument("x-queue-master-locator", value);
         }
     }

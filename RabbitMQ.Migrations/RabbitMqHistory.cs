@@ -49,6 +49,8 @@ namespace RabbitMQ.Migrations
 
         public void UpdateAppliedMigrations(MigrationHistoryRow appliedMigration)
         {
+            Guard.ArgumentNotNull(nameof(appliedMigration), appliedMigration);
+
             var allAppliedMigrations = GetAllAppliedMigrations();
 
             if (allAppliedMigrations.AllMigrations.Any(x => x.Prefix == appliedMigration.Prefix))

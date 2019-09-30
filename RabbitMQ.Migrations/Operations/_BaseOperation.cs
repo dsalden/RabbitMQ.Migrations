@@ -14,7 +14,7 @@ namespace RabbitMQ.Migrations.Operations
 
         internal abstract void Execute(IModel model, string prefix);
 
-        protected string GetName(string prefix, string name)
+        protected static string GetName(string prefix, string name)
         {
             return string.IsNullOrEmpty(prefix)
                 ? name
