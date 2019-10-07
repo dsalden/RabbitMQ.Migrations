@@ -84,6 +84,10 @@ namespace RabbitMQ.Migrations
                     _rabbitMqHistory.UpdateAppliedMigrations(appliedMigrations);
                 }
             }
+            catch (FileLoadException ex)
+            {
+                throw new RabbitMqMigrationException($"Could not revert RabbitMQ model: could not load file {ex.FileName}", ex);
+            }
             catch (Exception ex)
             {
                 throw new RabbitMqMigrationException($"Could not revert RabbitMQ model", ex);
