@@ -34,6 +34,7 @@ namespace RabbitMQ.Migrations
 
                 var allMigrations = GetAllRabbitMqMigrations(prefix);
                 using (var connection = _connectionFactory.CreateConnection())
+                using (new RabbitMqMigratorLock(_connectionFactory))
                 {
                     foreach (var migrationInfo in allMigrations.Where(x => appliedMigrations.AppliedMigrations.All(y => x.Key != y)).OrderBy(x => x.Key))
                     {
@@ -69,6 +70,7 @@ namespace RabbitMQ.Migrations
 
                 var allMigrations = GetAllRabbitMqMigrations(prefix);
                 using (var connection = _connectionFactory.CreateConnection())
+                using (new RabbitMqMigratorLock(_connectionFactory))
                 {
                     foreach (var migrationInfo in allMigrations.Where(x => appliedMigrations.AppliedMigrations.Any(y => x.Key == y)).OrderByDescending(x => x.Key))
                     {

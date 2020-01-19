@@ -67,7 +67,7 @@ namespace RabbitMQ.Migrations.Tests.Operations
             var exchange = server.Exchanges.Values.First();
             Assert.AreEqual("bar", exchange.Name);
             Assert.AreEqual(ExchangeType.Topic, exchange.Type);
-            Assert.IsFalse(exchange.AutoDelete);
+            Assert.IsFalse(exchange.IsAutoDelete);
             Assert.IsFalse(exchange.IsDurable);
             Assert.AreEqual(0, exchange.Arguments.Count);
             Assert.AreEqual(0, exchange.Bindings.Count);
@@ -96,7 +96,7 @@ namespace RabbitMQ.Migrations.Tests.Operations
             var exchange = server.Exchanges.Values.First();
             Assert.AreEqual("bar", exchange.Name);
             Assert.AreEqual(ExchangeType.Topic, exchange.Type);
-            Assert.IsTrue(exchange.AutoDelete);
+            Assert.IsTrue(exchange.IsAutoDelete);
             Assert.IsTrue(exchange.IsDurable);
             Assert.AreEqual(1, exchange.Arguments.Count);
             Assert.IsTrue(exchange.Arguments.Contains("foo"));
