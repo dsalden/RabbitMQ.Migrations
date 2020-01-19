@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Exceptions;
 
 namespace RabbitMQ.Migrations
 {
@@ -7,19 +9,42 @@ namespace RabbitMQ.Migrations
     {
         private readonly IConnection _connection;
         private readonly IModel _model;
+        private int _counter;
 
         public RabbitMqMigratorLock(IConnectionFactory connectionFactory)
         {
             _connection = connectionFactory.CreateConnection();
             _model = _connection.CreateModel();
-            _model.QueueDeclare(Constants.LockQueue, false, true, true, null);
+            StartLock();
         }
 
         public void Dispose()
         {
+            _model?.Close(); 
             _model?.Dispose();
             _connection?.Close();
             _connection?.Dispose();
+        }
+
+        private void StartLock()
+        {
+            try
+            {
+                _model.QueueDeclare(Constants.LockQueue, false, true, true, null);
+            }
+            catch (OperationInterruptedException)
+            {
+                _counter++;
+                if (_counter < 3)
+                {
+                    Thread.Sleep(1000);
+                    StartLock();
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
     }
 }
