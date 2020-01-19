@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Migrations.Objects;
+using System.Linq;
 using System.Text;
 
 namespace RabbitMQ.Migrations
@@ -44,7 +44,7 @@ namespace RabbitMQ.Migrations
 
             return allAppliedMigrations.AllMigrations.Any(x => x.Prefix == prefix)
                 ? allAppliedMigrations.AllMigrations.FirstOrDefault(x => x.Prefix == prefix)
-                : new MigrationHistoryRow {Prefix = prefix};
+                : new MigrationHistoryRow { Prefix = prefix };
         }
 
         public void UpdateAppliedMigrations(MigrationHistoryRow appliedMigration)

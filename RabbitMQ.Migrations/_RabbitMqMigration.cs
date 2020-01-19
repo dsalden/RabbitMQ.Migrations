@@ -1,6 +1,6 @@
-﻿using System;
+﻿using RabbitMQ.Migrations.Operations;
+using System;
 using System.Collections.Generic;
-using RabbitMQ.Migrations.Operations;
 
 namespace RabbitMQ.Migrations
 {

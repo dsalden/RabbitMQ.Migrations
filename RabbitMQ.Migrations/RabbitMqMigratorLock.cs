@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
+using System;
+using System.Threading;
 
 namespace RabbitMQ.Migrations
 {
@@ -20,7 +20,7 @@ namespace RabbitMQ.Migrations
 
         public void Dispose()
         {
-            _model?.Close(); 
+            _model?.Close();
             _model?.Dispose();
             _connection?.Close();
             _connection?.Dispose();
