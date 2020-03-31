@@ -1,4 +1,5 @@
 ﻿using RabbitMQ.Client;
+using System;
 
 namespace RabbitMQ.Migrations.Operations
 {
@@ -12,6 +13,8 @@ namespace RabbitMQ.Migrations.Operations
         {
             model.QueueDelete(GetName(prefix, Name), IfUnused, IfEmpty);
         }
+
+        internal override int CalculateHash() => HashCode.Combine(Name, IfUnused, IfEmpty);
 
         internal DeleteQueueOperation SetName(string value)
         {

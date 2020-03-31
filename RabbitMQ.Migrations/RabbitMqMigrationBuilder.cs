@@ -6,7 +6,7 @@ namespace RabbitMQ.Migrations
 {
     public class RabbitMqMigrationBuilder
     {
-        public List<BaseOperation> Operations { get; } = new List<BaseOperation>();
+        public IList<BaseOperation> Operations { get; } = new List<BaseOperation>();
 
         public AddExchangeOperation AddDirectExchange(string name) => AddExchange(name, ExchangeType.Direct);
         public AddExchangeOperation AddFanoutExchange(string name) => AddExchange(name, ExchangeType.Fanout);

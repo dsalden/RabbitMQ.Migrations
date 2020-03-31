@@ -1,4 +1,5 @@
 ﻿using RabbitMQ.Client;
+using System;
 using System.Collections.Generic;
 
 namespace RabbitMQ.Migrations.Operations
@@ -21,6 +22,8 @@ namespace RabbitMQ.Migrations.Operations
                 bindQueueOperation.Execute(model, prefix);
             }
         }
+
+        internal override int CalculateHash() => HashCode.Combine(Name, Durable, Exclusive, AutoDelete, Arguments, BindQueueOperations);
 
         internal AddQueueOperation SetName(string value)
         {

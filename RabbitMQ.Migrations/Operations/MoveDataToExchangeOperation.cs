@@ -1,4 +1,5 @@
 ﻿using RabbitMQ.Client;
+using System;
 using System.Text;
 
 namespace RabbitMQ.Migrations.Operations
@@ -24,6 +25,8 @@ namespace RabbitMQ.Migrations.Operations
                 model.BasicAck(message.DeliveryTag, false);
             }
         }
+
+        internal override int CalculateHash() => HashCode.Combine(SourceQueueName, DestinationExchangeName);
 
         internal MoveDataToExchangeOperation SetSourceQueueName(string value)
         {

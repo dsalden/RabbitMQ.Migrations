@@ -20,5 +20,7 @@ namespace RabbitMQ.Migrations.Operations
                 ? name
                 : $"{prefix}.{name}";
         }
+
+        internal abstract int CalculateHash();
     }
 }

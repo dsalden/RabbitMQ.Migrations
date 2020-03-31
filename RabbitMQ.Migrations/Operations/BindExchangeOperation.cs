@@ -1,4 +1,5 @@
 ﻿using RabbitMQ.Client;
+using System;
 using System.Collections.Generic;
 
 namespace RabbitMQ.Migrations.Operations
@@ -14,6 +15,8 @@ namespace RabbitMQ.Migrations.Operations
         {
             model.ExchangeBind(GetName(prefix, DestinationExchangeName), GetName(prefix, SourceExchangeName), RoutingKey, Arguments);
         }
+
+        internal override int CalculateHash() => HashCode.Combine(SourceExchangeName, DestinationExchangeName, RoutingKey, Arguments);
 
         internal BindExchangeOperation SetDestinationExchangeName(string value)
         {
