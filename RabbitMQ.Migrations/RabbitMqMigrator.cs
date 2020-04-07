@@ -10,7 +10,7 @@ using RabbitMQ.Migrations.Objects.v2;
 
 namespace RabbitMQ.Migrations
 {
-    public class RabbitMqMigrator : IRabbitMqMigrator
+    internal class RabbitMqMigrator : IRabbitMqMigrator
     {
         private readonly IConnectionFactory _connectionFactory;
         private readonly IRabbitMqHistory _rabbitMqHistory;

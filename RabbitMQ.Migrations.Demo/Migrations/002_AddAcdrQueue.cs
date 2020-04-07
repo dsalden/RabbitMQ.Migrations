@@ -24,6 +24,7 @@ namespace RabbitMQ.Migrations.Demo.Migrations
 
         protected override void Down(RabbitMqMigrationBuilder migrationBuilder)
         {
+            migrationBuilder.MoveDataToExchange(PolarisAcdrQueueIn, PolarisDeadLetterExchangeIn);
             //delete queues
             migrationBuilder.DeleteQueue(PolarisAcdrQueueIn);
         }

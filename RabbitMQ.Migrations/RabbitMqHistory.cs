@@ -10,7 +10,7 @@ using System.Text;
 
 namespace RabbitMQ.Migrations
 {
-    public class RabbitMqHistory : IRabbitMqHistory
+    internal class RabbitMqHistory : IRabbitMqHistory
     {
         private readonly IConnectionFactory _connectionFactory;
         internal static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
