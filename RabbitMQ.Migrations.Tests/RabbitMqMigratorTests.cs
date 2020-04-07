@@ -1,9 +1,9 @@
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RabbitMQ.Client;
 using RabbitMQ.Fakes;
-using RabbitMQ.Migrations.Objects;
+using RabbitMQ.Migrations.Objects.v2;
+using System.Collections.Generic;
 
 namespace RabbitMQ.Migrations.Tests
 {
@@ -34,7 +34,7 @@ namespace RabbitMQ.Migrations.Tests
 
             var history = new Mock<IRabbitMqHistory>();
             history.Setup(x => x.GetAppliedMigrations(It.IsAny<string>())).Returns<string>(prefix =>
-                new MigrationHistoryRow { Prefix = prefix, AppliedMigrations = new List<string> { "001_TestMigration" } });
+                new MigrationHistoryRow { Prefix = prefix, AppliedMigrations = new List<MigrationHistoryRowDetails> { new MigrationHistoryRowDetails { Name = "001_TestMigration" } } });
 
             var migrator = new RabbitMqMigrator(connectionFactory, history.Object);
             migrator.UpdateModel("UnitTest");
@@ -74,7 +74,7 @@ namespace RabbitMQ.Migrations.Tests
 
             var history = new Mock<IRabbitMqHistory>();
             history.Setup(x => x.GetAppliedMigrations(It.IsAny<string>())).Returns<string>(prefix =>
-                new MigrationHistoryRow {Prefix = prefix, AppliedMigrations = new List<string> {"001_TestMigration"}});
+                new MigrationHistoryRow { Prefix = prefix, AppliedMigrations = new List<MigrationHistoryRowDetails> { new MigrationHistoryRowDetails { Name = "001_TestMigration" } } });
 
             var migrator = new RabbitMqMigrator(connectionFactory, history.Object);
             migrator.RevertAll("UnitTest");

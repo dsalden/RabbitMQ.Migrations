@@ -1,4 +1,4 @@
-﻿using RabbitMQ.Migrations.Objects;
+﻿using RabbitMQ.Migrations.Objects.v2;
 
 namespace RabbitMQ.Migrations
 {

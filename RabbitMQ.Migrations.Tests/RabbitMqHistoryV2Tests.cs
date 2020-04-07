@@ -2,14 +2,17 @@
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Fakes;
-using RabbitMQ.Migrations.Objects;
+using RabbitMQ.Migrations.Objects.v2;
+using RabbitMQ.Migrations.Operations;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace RabbitMQ.Migrations.Tests
 {
     [TestClass]
-    public class RabbitMqHistoryTests
+    public class RabbitMqHistoryV2Tests
     {
         private RabbitServer _rabbitServer;
         private IConnectionFactory _connectionFactory;
@@ -38,6 +41,7 @@ namespace RabbitMQ.Migrations.Tests
             var result = _rabbitMqHistory.GetAllAppliedMigrations();
 
             Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Version);
             Assert.AreEqual(0, result.AllMigrations.Count);
         }
 
@@ -48,6 +52,7 @@ namespace RabbitMQ.Migrations.Tests
             var result = _rabbitMqHistory.GetAllAppliedMigrations();
 
             Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Version);
             Assert.AreEqual(0, result.AllMigrations.Count);
         }
 
@@ -61,11 +66,12 @@ namespace RabbitMQ.Migrations.Tests
             var result = _rabbitMqHistory.GetAllAppliedMigrations();
 
             Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Version);
             Assert.AreEqual(1, result.AllMigrations.Count);
             var migration = result.AllMigrations.First();
             Assert.AreEqual("test", migration.Prefix);
             Assert.AreEqual(1, migration.AppliedMigrations.Count);
-            Assert.AreEqual("001_TestMigration", migration.AppliedMigrations.First());
+            Assert.AreEqual("001_TestMigration", migration.AppliedMigrations.First().Name);
         }
 
         [TestMethod]
@@ -80,7 +86,7 @@ namespace RabbitMQ.Migrations.Tests
             Assert.IsNotNull(result);
             Assert.AreEqual("test", result.Prefix);
             Assert.AreEqual(1, result.AppliedMigrations.Count);
-            Assert.AreEqual("001_TestMigration", result.AppliedMigrations.First());
+            Assert.AreEqual("001_TestMigration", result.AppliedMigrations.First().Name);
         }
 
         [TestMethod]
@@ -103,10 +109,10 @@ namespace RabbitMQ.Migrations.Tests
             _rabbitMqHistory.Init();
             SetupDefaultExchange();
 
-            var mirgationHistoryRow = new MigrationHistoryRow { Prefix = "test" };
-            mirgationHistoryRow.AppliedMigrations.Add("001_TestMigration");
+            var migrationHistoryRow = new MigrationHistoryRow { Prefix = "test" };
+            migrationHistoryRow.AppliedMigrations.Add(new MigrationHistoryRowDetails { Name = "001_TestMigration" });
 
-            _rabbitMqHistory.UpdateAppliedMigrations(mirgationHistoryRow);
+            _rabbitMqHistory.UpdateAppliedMigrations(migrationHistoryRow);
 
             using (var connection = _connectionFactory.CreateConnection())
             using (var channel = connection.CreateModel())
@@ -114,13 +120,13 @@ namespace RabbitMQ.Migrations.Tests
                 var message = channel.BasicGet(Constants.HistoryQueue, true);
                 Assert.IsNotNull(message);
 
-                var migrationHistory = JsonConvert.DeserializeObject<MigrationHistory>(Encoding.UTF8.GetString(message.Body));
+                var migrationHistory = JsonConvert.DeserializeObject<MigrationHistory>(Encoding.UTF8.GetString(message.Body), RabbitMqHistory.JsonSerializerSettings);
                 Assert.IsNotNull(migrationHistory);
                 Assert.AreEqual(1, migrationHistory.AllMigrations.Count);
                 var migration = migrationHistory.AllMigrations.First();
                 Assert.AreEqual("test", migration.Prefix);
                 Assert.AreEqual(1, migration.AppliedMigrations.Count);
-                Assert.AreEqual("001_TestMigration", migration.AppliedMigrations.First());
+                Assert.AreEqual("001_TestMigration", migration.AppliedMigrations.First().Name);
             }
         }
 
@@ -131,11 +137,11 @@ namespace RabbitMQ.Migrations.Tests
             SetupDefaultExchange();
 
             PushDummyMigrationHistoryMessage();
-            var mirgationHistoryRow = new MigrationHistoryRow { Prefix = "test" };
-            mirgationHistoryRow.AppliedMigrations.Add("001_TestMigration");
-            mirgationHistoryRow.AppliedMigrations.Add("002_TestMigrationAddQueue");
+            var migrationHistoryRow = new MigrationHistoryRow { Prefix = "test" };
+            migrationHistoryRow.AppliedMigrations.Add(new MigrationHistoryRowDetails { Name = "001_TestMigration" });
+            migrationHistoryRow.AppliedMigrations.Add(new MigrationHistoryRowDetails { Name = "002_TestMigrationAddQueue" });
 
-            _rabbitMqHistory.UpdateAppliedMigrations(mirgationHistoryRow);
+            _rabbitMqHistory.UpdateAppliedMigrations(migrationHistoryRow);
 
             using (var connection = _connectionFactory.CreateConnection())
             using (var channel = connection.CreateModel())
@@ -143,13 +149,13 @@ namespace RabbitMQ.Migrations.Tests
                 var message = channel.BasicGet(Constants.HistoryQueue, true);
                 Assert.IsNotNull(message);
 
-                var migrationHistory = JsonConvert.DeserializeObject<MigrationHistory>(Encoding.UTF8.GetString(message.Body));
+                var migrationHistory = JsonConvert.DeserializeObject<MigrationHistory>(Encoding.UTF8.GetString(message.Body), RabbitMqHistory.JsonSerializerSettings);
                 Assert.IsNotNull(migrationHistory);
                 Assert.AreEqual(1, migrationHistory.AllMigrations.Count);
                 var migration = migrationHistory.AllMigrations.First();
                 Assert.AreEqual("test", migration.Prefix);
                 Assert.AreEqual(2, migration.AppliedMigrations.Count);
-                CollectionAssert.AreEqual(mirgationHistoryRow.AppliedMigrations.ToList(), migration.AppliedMigrations.ToList());
+                CollectionAssert.AreEqual(migrationHistoryRow.AppliedMigrations.ToList(), migration.AppliedMigrations.ToList(), new AppliedMigrationsComparer());
             }
         }
 
@@ -165,16 +171,38 @@ namespace RabbitMQ.Migrations.Tests
 
         private void PushDummyMigrationHistoryMessage()
         {
-            var mirgationHistoryRow = new MigrationHistoryRow { Prefix = "test" };
-            mirgationHistoryRow.AppliedMigrations.Add("001_TestMigration");
+            var migrationHistoryRow = new MigrationHistoryRow { Prefix = "test" };
+            migrationHistoryRow.AppliedMigrations.Add(new MigrationHistoryRowDetails
+            {
+                Name = "001_TestMigration",
+                Hash = -32386203,
+                DownOperations = new List<BaseOperation>
+                {
+                    new DeleteQueueOperation().SetName("bar"),
+                    new DeleteExchangeOperation().SetName("foo")
+                }
+            });
             var migrationHistory = new MigrationHistory();
-            migrationHistory.AllMigrations.Add(mirgationHistoryRow);
+            migrationHistory.AllMigrations.Add(migrationHistoryRow);
 
             using (var connection = _connectionFactory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                var messageBody = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(migrationHistory));
+                var messageBody = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(migrationHistory, RabbitMqHistory.JsonSerializerSettings));
                 channel.BasicPublish("", Constants.HistoryQueue, false, null, messageBody);
+            }
+        }
+
+        public class AppliedMigrationsComparer : IComparer
+        {
+            int IComparer.Compare(object x, object y)
+            {
+                if (x is MigrationHistoryRowDetails xTyped && y is MigrationHistoryRowDetails yTyped)
+                {
+                    return xTyped.Name == yTyped.Name ? 0 : 1;
+                }
+
+                return 1;
             }
         }
     }

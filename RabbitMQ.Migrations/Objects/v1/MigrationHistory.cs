@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RabbitMQ.Migrations.Objects
+namespace RabbitMQ.Migrations.Objects.v1
 {
     public class MigrationHistory
     {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using RabbitMQ.Migrations.Objects.v2;
 
 namespace RabbitMQ.Migrations
 {
@@ -36,7 +37,7 @@ namespace RabbitMQ.Migrations
                 using (new RabbitMqMigratorLock(_connectionFactory))
                 using (var connection = _connectionFactory.CreateConnection())
                 {
-                    foreach (var migrationInfo in allMigrations.Where(x => appliedMigrations.AppliedMigrations.All(y => x.Key != y)).OrderBy(x => x.Key))
+                    foreach (var migrationInfo in allMigrations.Where(x => appliedMigrations.AppliedMigrations.All(y => x.Key != y.Name)).OrderBy(x => x.Key))
                     {
                         var migration = CreateRabbitMqMigration(migrationInfo.Value);
                         foreach (var operation in migration.UpOperations)
@@ -44,7 +45,7 @@ namespace RabbitMQ.Migrations
                             operation.Execute(connection, prefix);
                         }
 
-                        appliedMigrations.AppliedMigrations.Add(migrationInfo.Key);
+                        appliedMigrations.AppliedMigrations.Add(new MigrationHistoryRowDetails { Name = migrationInfo.Key, Hash = migration.CalculateHash(), DownOperations = migration.DownOperations });
                     }
 
                     _rabbitMqHistory.UpdateAppliedMigrations(appliedMigrations);
@@ -72,7 +73,7 @@ namespace RabbitMQ.Migrations
                 using (new RabbitMqMigratorLock(_connectionFactory))
                 using (var connection = _connectionFactory.CreateConnection())
                 {
-                    foreach (var migrationInfo in allMigrations.Where(x => appliedMigrations.AppliedMigrations.Any(y => x.Key == y)).OrderByDescending(x => x.Key))
+                    foreach (var migrationInfo in allMigrations.Where(x => appliedMigrations.AppliedMigrations.Any(y => x.Key == y.Name)).OrderByDescending(x => x.Key))
                     {
                         var migration = CreateRabbitMqMigration(migrationInfo.Value);
                         foreach (var operation in migration.DownOperations)
@@ -80,7 +81,7 @@ namespace RabbitMQ.Migrations
                             operation.Execute(connection, prefix);
                         }
 
-                        appliedMigrations.AppliedMigrations.Remove(migrationInfo.Key);
+                        appliedMigrations.AppliedMigrations.Remove(appliedMigrations.AppliedMigrations.First(x => x.Name == migrationInfo.Key));
                     }
 
                     _rabbitMqHistory.UpdateAppliedMigrations(appliedMigrations);
