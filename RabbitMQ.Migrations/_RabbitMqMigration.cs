@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Migrations.Extensions;
+﻿using Newtonsoft.Json;
+using RabbitMQ.Migrations.Helpers;
 using RabbitMQ.Migrations.Operations;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,10 @@ namespace RabbitMQ.Migrations
         private IList<BaseOperation> _upOperations;
         private IList<BaseOperation> _downOperations;
 
-        public IList<BaseOperation> UpOperations => _upOperations ?? (_upOperations = BuildOperations(Up));
-        public IList<BaseOperation> DownOperations => _downOperations ?? (_downOperations = BuildOperations(Down));
+        [JsonProperty]
+        public IList<BaseOperation> UpOperations => _upOperations ??= BuildOperations(Up);
+        [JsonProperty]
+        public IList<BaseOperation> DownOperations => _downOperations ??= BuildOperations(Down);
 
         protected abstract void Up(RabbitMqMigrationBuilder migrationBuilder);
         protected abstract void Down(RabbitMqMigrationBuilder migrationBuilder);
@@ -24,12 +27,9 @@ namespace RabbitMQ.Migrations
             return migrationBuilder.Operations;
         }
 
-        internal int CalculateHash()
+        internal string CalculateHash()
         {
-            var hashCode = new HashCode();
-            UpOperations.ForEach(x => hashCode.Add(x));
-            DownOperations.ForEach(x => hashCode.Add(x));
-            return hashCode.ToHashCode();
+            return HashHelper.ComputeSha256Hash(this);
         }
     }
 }

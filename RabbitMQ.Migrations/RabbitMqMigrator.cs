@@ -1,12 +1,13 @@
 ﻿using RabbitMQ.Client;
 using RabbitMQ.Migrations.Attributes;
 using RabbitMQ.Migrations.Exceptions;
+using RabbitMQ.Migrations.Extensions;
+using RabbitMQ.Migrations.Operations;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using RabbitMQ.Migrations.Objects.v2;
 
 namespace RabbitMQ.Migrations
 {
@@ -35,17 +36,36 @@ namespace RabbitMQ.Migrations
 
                 var allMigrations = GetAllRabbitMqMigrations(prefix);
                 using (new RabbitMqMigratorLock(_connectionFactory))
-                using (var connection = _connectionFactory.CreateConnection())
                 {
-                    foreach (var migrationInfo in allMigrations.Where(x => appliedMigrations.AppliedMigrations.All(y => x.Key != y.Name)).OrderBy(x => x.Key))
+                    using var connection = _connectionFactory.CreateConnection();
+                    foreach (var migrationInfo in allMigrations.OrderBy(x => x.Key))
                     {
-                        var migration = CreateRabbitMqMigration(migrationInfo.Value);
-                        foreach (var operation in migration.UpOperations)
+                        var applied = appliedMigrations.GetMigration(migrationInfo.Key);
+                        if (applied == null)
                         {
-                            operation.Execute(connection, prefix);
+                            // Apply migration operations
+                            ApplyOperations(connection, prefix, migrationInfo.Value.UpOperations);
+                            appliedMigrations.AddMigration(migrationInfo);
                         }
+                        else if (!string.IsNullOrEmpty(applied.Hash) && applied.Hash != migrationInfo.Value.CalculateHash())
+                        {
+                            // Rollback old version of migration
+                            ApplyOperations(connection, prefix, applied.DownOperations);
+                            // Apply new version of migration
+                            ApplyOperations(connection, prefix, migrationInfo.Value.UpOperations);
+                            applied.UpdateMigration(migrationInfo.Value);
+                        }
+                        else if (string.IsNullOrEmpty(applied.Hash))
+                        {
+                            applied.UpdateMigration(migrationInfo.Value);
+                        }
+                    }
 
-                        appliedMigrations.AppliedMigrations.Add(new MigrationHistoryRowDetails { Name = migrationInfo.Key, Hash = migration.CalculateHash(), DownOperations = migration.DownOperations });
+                    foreach (var applied in appliedMigrations.AppliedMigrations.Where(x => allMigrations.All(y => y.Key != x.Name)).ToList())
+                    {
+                        // Rollback migration because not present in current application
+                        ApplyOperations(connection, prefix, applied.DownOperations);
+                        appliedMigrations.RemoveMigration(applied.Name);
                     }
 
                     _rabbitMqHistory.UpdateAppliedMigrations(appliedMigrations);
@@ -57,7 +77,7 @@ namespace RabbitMQ.Migrations
             }
             catch (Exception ex)
             {
-                throw new RabbitMqMigrationException($"Could not update RabbitMQ model", ex);
+                throw new RabbitMqMigrationException("Could not update RabbitMQ model", ex);
             }
         }
 
@@ -71,17 +91,18 @@ namespace RabbitMQ.Migrations
 
                 var allMigrations = GetAllRabbitMqMigrations(prefix);
                 using (new RabbitMqMigratorLock(_connectionFactory))
-                using (var connection = _connectionFactory.CreateConnection())
                 {
-                    foreach (var migrationInfo in allMigrations.Where(x => appliedMigrations.AppliedMigrations.Any(y => x.Key == y.Name)).OrderByDescending(x => x.Key))
+                    using var connection = _connectionFactory.CreateConnection();
+                    foreach (var applied in appliedMigrations.AppliedMigrations.ToList())
                     {
-                        var migration = CreateRabbitMqMigration(migrationInfo.Value);
-                        foreach (var operation in migration.DownOperations)
+                        var downOperations = applied.DownOperations;
+                        if (!downOperations.Any() && allMigrations.ContainsKey(applied.Name))
                         {
-                            operation.Execute(connection, prefix);
+                            downOperations = allMigrations[applied.Name].DownOperations;
                         }
 
-                        appliedMigrations.AppliedMigrations.Remove(appliedMigrations.AppliedMigrations.First(x => x.Name == migrationInfo.Key));
+                        ApplyOperations(connection, prefix, downOperations);
+                        appliedMigrations.RemoveMigration(applied.Name);
                     }
 
                     _rabbitMqHistory.UpdateAppliedMigrations(appliedMigrations);
@@ -93,11 +114,11 @@ namespace RabbitMQ.Migrations
             }
             catch (Exception ex)
             {
-                throw new RabbitMqMigrationException($"Could not revert RabbitMQ model", ex);
+                throw new RabbitMqMigrationException("Could not revert RabbitMQ model", ex);
             }
         }
 
-        private static IReadOnlyDictionary<string, TypeInfo> GetAllRabbitMqMigrations(string prefix)
+        private static IReadOnlyDictionary<string, RabbitMqMigration> GetAllRabbitMqMigrations(string prefix)
         {
             return (from a in AppDomain.CurrentDomain.GetAssemblies()
                     from type in a.DefinedTypes
@@ -106,14 +127,17 @@ namespace RabbitMQ.Migrations
                     let id = type.GetCustomAttribute<RabbitMqMigrationAttribute>()?.Id
                     orderby id
                     select (id, type))
-                .ToDictionary(tuple => tuple.id, tuple => tuple.type);
+                .ToDictionary(tuple => tuple.id, tuple => CreateRabbitMqMigration(tuple.type));
         }
 
         private static RabbitMqMigration CreateRabbitMqMigration(TypeInfo migrationClass)
         {
-            var migration = (RabbitMqMigration)Activator.CreateInstance(migrationClass.AsType());
+            return (RabbitMqMigration)Activator.CreateInstance(migrationClass.AsType());
+        }
 
-            return migration;
+        private static void ApplyOperations(IConnection connection, string prefix, IEnumerable<BaseOperation> operations)
+        {
+            operations?.ForEach(x => x.Execute(connection, prefix));
         }
     }
 }

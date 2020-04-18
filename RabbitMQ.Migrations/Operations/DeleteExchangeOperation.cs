@@ -1,19 +1,20 @@
 ﻿using RabbitMQ.Client;
 using System;
+using Newtonsoft.Json;
 
 namespace RabbitMQ.Migrations.Operations
 {
     public class DeleteExchangeOperation : BaseOperation
     {
+        [JsonProperty]
         internal string Name;
+        [JsonProperty]
         internal bool IfUnused;
 
         internal override void Execute(IModel model, string prefix)
         {
             model.ExchangeDelete(GetName(prefix, Name), IfUnused);
         }
-
-        internal override int CalculateHash() => HashCode.Combine(Name, IfUnused);
 
         internal DeleteExchangeOperation SetName(string value)
         {

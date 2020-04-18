@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using RabbitMQ.Migrations.Operations;
+﻿using RabbitMQ.Migrations.Operations;
+using System.Collections.Generic;
 
 namespace RabbitMQ.Migrations.Objects.v2
 {
@@ -12,7 +12,7 @@ namespace RabbitMQ.Migrations.Objects.v2
 
         public string Name { get; set; }
 
-        public int Hash { get; set; }
+        public string Hash { get; set; }
 
 #pragma warning disable CA2227 // Collection properties should be read only
         public IList<BaseOperation> DownOperations { get; set; }

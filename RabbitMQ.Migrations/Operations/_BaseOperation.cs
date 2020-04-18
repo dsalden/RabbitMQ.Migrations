@@ -6,10 +6,8 @@ namespace RabbitMQ.Migrations.Operations
     {
         internal virtual void Execute(IConnection connection, string prefix)
         {
-            using (var model = connection.CreateModel())
-            {
-                Execute(model, prefix);
-            }
+            using var model = connection.CreateModel();
+            Execute(model, prefix);
         }
 
         internal abstract void Execute(IModel model, string prefix);
@@ -20,7 +18,5 @@ namespace RabbitMQ.Migrations.Operations
                 ? name
                 : $"{prefix}.{name}";
         }
-
-        internal abstract int CalculateHash();
     }
 }

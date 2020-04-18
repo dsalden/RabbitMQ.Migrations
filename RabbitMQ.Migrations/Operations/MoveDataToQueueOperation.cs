@@ -1,12 +1,15 @@
 ﻿using RabbitMQ.Client;
 using System;
+using Newtonsoft.Json;
 
 namespace RabbitMQ.Migrations.Operations
 {
     public class MoveDataToQueueOperation : BaseOperation
     {
         private const string _originalRoutingKey = "ORG_RoutingKey";
+        [JsonProperty]
         internal string SourceQueueName;
+        [JsonProperty]
         internal string DestinationQueueName;
 
         internal override void Execute(IModel model, string prefix)
@@ -22,8 +25,6 @@ namespace RabbitMQ.Migrations.Operations
                 model.BasicAck(message.DeliveryTag, false);
             }
         }
-
-        internal override int CalculateHash() => HashCode.Combine(SourceQueueName, DestinationQueueName);
 
         internal MoveDataToQueueOperation SetSourceQueueName(string value)
         {

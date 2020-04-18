@@ -1,22 +1,24 @@
-﻿using RabbitMQ.Client;
-using System;
+﻿using Newtonsoft.Json;
+using RabbitMQ.Client;
 using System.Collections.Generic;
 
 namespace RabbitMQ.Migrations.Operations
 {
     public class BindExchangeOperation : BaseOperation
     {
+        [JsonProperty]
         internal string SourceExchangeName;
+        [JsonProperty]
         internal string DestinationExchangeName;
+        [JsonProperty]
         internal string RoutingKey;
+        [JsonProperty]
         internal readonly IDictionary<string, object> Arguments = new Dictionary<string, object>();
 
         internal override void Execute(IModel model, string prefix)
         {
             model.ExchangeBind(GetName(prefix, DestinationExchangeName), GetName(prefix, SourceExchangeName), RoutingKey, Arguments);
         }
-
-        internal override int CalculateHash() => HashCode.Combine(SourceExchangeName, DestinationExchangeName, RoutingKey, Arguments);
 
         internal BindExchangeOperation SetDestinationExchangeName(string value)
         {

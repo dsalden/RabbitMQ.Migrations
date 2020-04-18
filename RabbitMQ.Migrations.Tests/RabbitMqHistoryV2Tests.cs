@@ -1,13 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Fakes;
+using RabbitMQ.Migrations.Helpers;
 using RabbitMQ.Migrations.Objects.v2;
 using RabbitMQ.Migrations.Operations;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace RabbitMQ.Migrations.Tests
 {
@@ -120,7 +119,7 @@ namespace RabbitMQ.Migrations.Tests
                 var message = channel.BasicGet(Constants.HistoryQueue, true);
                 Assert.IsNotNull(message);
 
-                var migrationHistory = JsonConvert.DeserializeObject<MigrationHistory>(Encoding.UTF8.GetString(message.Body), RabbitMqHistory.JsonSerializerSettings);
+                var migrationHistory = JsonConvertHelper.DeserializeObject<MigrationHistory>(message.Body);
                 Assert.IsNotNull(migrationHistory);
                 Assert.AreEqual(1, migrationHistory.AllMigrations.Count);
                 var migration = migrationHistory.AllMigrations.First();
@@ -149,7 +148,7 @@ namespace RabbitMQ.Migrations.Tests
                 var message = channel.BasicGet(Constants.HistoryQueue, true);
                 Assert.IsNotNull(message);
 
-                var migrationHistory = JsonConvert.DeserializeObject<MigrationHistory>(Encoding.UTF8.GetString(message.Body), RabbitMqHistory.JsonSerializerSettings);
+                var migrationHistory = JsonConvertHelper.DeserializeObject<MigrationHistory>(message.Body);
                 Assert.IsNotNull(migrationHistory);
                 Assert.AreEqual(1, migrationHistory.AllMigrations.Count);
                 var migration = migrationHistory.AllMigrations.First();
@@ -175,7 +174,7 @@ namespace RabbitMQ.Migrations.Tests
             migrationHistoryRow.AppliedMigrations.Add(new MigrationHistoryRowDetails
             {
                 Name = "001_TestMigration",
-                Hash = -32386203,
+                Hash = "a0b87bef6d840b00ac344eb2a204442760794512bb8bc0873b63d8c7d5849e9f",
                 DownOperations = new List<BaseOperation>
                 {
                     new DeleteQueueOperation().SetName("bar"),
@@ -188,7 +187,7 @@ namespace RabbitMQ.Migrations.Tests
             using (var connection = _connectionFactory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                var messageBody = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(migrationHistory, RabbitMqHistory.JsonSerializerSettings));
+                var messageBody = JsonConvertHelper.SerializeObjectToByteArray(migrationHistory);
                 channel.BasicPublish("", Constants.HistoryQueue, false, null, messageBody);
             }
         }

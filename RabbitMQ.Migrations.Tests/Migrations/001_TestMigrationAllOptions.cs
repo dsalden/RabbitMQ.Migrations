@@ -21,6 +21,9 @@ namespace RabbitMQ.Migrations.Tests.Migrations
             migrationBuilder.BindExchange("fooTopic", "fooQueue", "#").AddArgument("foo", "bar");
             migrationBuilder.BindQueue("bar", "fooFan", "#").AddArgument("foo", "bar");
 
+            migrationBuilder.MoveDataToQueue("barDel", "bar");
+            migrationBuilder.MoveDataToExchange("bar", "fooTopic");
+
             migrationBuilder.DeleteQueue("barDel").SetIfEmpty(true);
             migrationBuilder.DeleteExchange("fooDel").SetIfUnused(true);
         }

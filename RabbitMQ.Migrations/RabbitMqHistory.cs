@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using RabbitMQ.Client;
 using RabbitMQ.Migrations.Exceptions;
 using RabbitMQ.Migrations.Helpers;
@@ -13,11 +12,6 @@ namespace RabbitMQ.Migrations
     internal class RabbitMqHistory : IRabbitMqHistory
     {
         private readonly IConnectionFactory _connectionFactory;
-        internal static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            TypeNameHandling = TypeNameHandling.Auto
-        };
 
         public RabbitMqHistory(IConnectionFactory connectionFactory)
         {
@@ -26,25 +20,21 @@ namespace RabbitMQ.Migrations
 
         public void Init()
         {
-            using (var connection = _connectionFactory.CreateConnection())
-            using (var model = connection.CreateModel())
-            {
-                model.QueueDeclare(Constants.HistoryQueue, true, false, false);
-            }
+            using var connection = _connectionFactory.CreateConnection();
+            using var model = connection.CreateModel();
+            model.QueueDeclare(Constants.HistoryQueue, true, false, false);
         }
 
         public MigrationHistory GetAllAppliedMigrations()
         {
-            using (var connection = _connectionFactory.CreateConnection())
-            using (var model = connection.CreateModel())
-            {
-                var result = model.BasicGet(Constants.HistoryQueue, false);
-                if (result == null) return new MigrationHistory();
+            using var connection = _connectionFactory.CreateConnection();
+            using var model = connection.CreateModel();
+            var result = model.BasicGet(Constants.HistoryQueue, false);
+            if (result == null) return new MigrationHistory();
 
-                model.BasicNack(result.DeliveryTag, false, true);
-                var migrationHistoryJson = Encoding.UTF8.GetString(result.Body);
-                return EnsureLatestMigrationHistoryVersion(migrationHistoryJson);
-            }
+            model.BasicNack(result.DeliveryTag, false, true);
+            var migrationHistoryJson = Encoding.UTF8.GetString(result.Body);
+            return EnsureLatestMigrationHistoryVersion(migrationHistoryJson);
         }
 
         public MigrationHistoryRow GetAppliedMigrations(string prefix)
@@ -72,21 +62,19 @@ namespace RabbitMQ.Migrations
                 allAppliedMigrations.AllMigrations.Add(appliedMigration);
             }
 
-            using (var connection = _connectionFactory.CreateConnection())
-            using (var model = connection.CreateModel())
-            {
-                model.BasicGet(Constants.HistoryQueue, true);
+            using var connection = _connectionFactory.CreateConnection();
+            using var model = connection.CreateModel();
+            model.BasicGet(Constants.HistoryQueue, true);
 
-                var messageText = JsonConvert.SerializeObject(allAppliedMigrations, JsonSerializerSettings);
-                var messageProps = model.CreateBasicProperties();
-                messageProps.Persistent = true;
-                model.BasicPublish(Constants.DefaultExchange, Constants.HistoryQueue, messageProps, Encoding.UTF8.GetBytes(messageText));
-            }
+            var messageText = JsonConvertHelper.SerializeObjectToByteArray(allAppliedMigrations);
+            var messageProps = model.CreateBasicProperties();
+            messageProps.Persistent = true;
+            model.BasicPublish(Constants.DefaultExchange, Constants.HistoryQueue, messageProps, messageText);
         }
 
         private static MigrationHistory EnsureLatestMigrationHistoryVersion(string migrationHistoryJson)
         {
-            var migrationHistory = JsonConvert.DeserializeObject<GenericMigrationHistory>(migrationHistoryJson, JsonSerializerSettings);
+            var migrationHistory = JsonConvertHelper.DeserializeObject<GenericMigrationHistory>(migrationHistoryJson);
             switch (migrationHistory.Version)
             {
                 case 1:
@@ -94,7 +82,7 @@ namespace RabbitMQ.Migrations
                     var migrationHistoryV1 = JsonConvert.DeserializeObject<Objects.v1.MigrationHistory>(migrationHistoryJson);
                     return MigrationHistoryUpgradeHelper.UpgradeToV2(migrationHistoryV1);
                 case 2:
-                    return JsonConvert.DeserializeObject<MigrationHistory>(migrationHistoryJson, JsonSerializerSettings);
+                    return JsonConvertHelper.DeserializeObject<MigrationHistory>(migrationHistoryJson);
                 default:
                     throw new RabbitMqMigrationException($"Invalid RabbitMq History version {migrationHistory.Version}");
             }

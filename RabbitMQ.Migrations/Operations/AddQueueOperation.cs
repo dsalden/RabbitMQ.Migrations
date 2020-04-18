@@ -1,16 +1,23 @@
 ﻿using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace RabbitMQ.Migrations.Operations
 {
     public class AddQueueOperation : BaseOperation
     {
+        [JsonProperty]
         internal string Name;
+        [JsonProperty]
         internal bool Durable;
+        [JsonProperty]
         internal bool Exclusive;
+        [JsonProperty]
         internal bool AutoDelete;
+        [JsonProperty]
         internal readonly IDictionary<string, object> Arguments = new Dictionary<string, object>();
+        [JsonProperty]
         internal readonly IList<BindQueueOperation> BindQueueOperations = new List<BindQueueOperation>();
 
         internal override void Execute(IModel model, string prefix)
@@ -22,8 +29,6 @@ namespace RabbitMQ.Migrations.Operations
                 bindQueueOperation.Execute(model, prefix);
             }
         }
-
-        internal override int CalculateHash() => HashCode.Combine(Name, Durable, Exclusive, AutoDelete, Arguments, BindQueueOperations);
 
         internal AddQueueOperation SetName(string value)
         {

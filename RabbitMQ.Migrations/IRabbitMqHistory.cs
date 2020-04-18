@@ -2,7 +2,7 @@
 
 namespace RabbitMQ.Migrations
 {
-    public interface IRabbitMqHistory
+    internal interface IRabbitMqHistory
     {
         void Init();
         MigrationHistory GetAllAppliedMigrations();

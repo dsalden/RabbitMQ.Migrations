@@ -1,20 +1,22 @@
 ﻿using RabbitMQ.Client;
 using System;
+using Newtonsoft.Json;
 
 namespace RabbitMQ.Migrations.Operations
 {
     public class DeleteQueueOperation : BaseOperation
     {
+        [JsonProperty]
         internal string Name;
+        [JsonProperty]
         internal bool IfUnused;
+        [JsonProperty]
         internal bool IfEmpty;
 
         internal override void Execute(IModel model, string prefix)
         {
             model.QueueDelete(GetName(prefix, Name), IfUnused, IfEmpty);
         }
-
-        internal override int CalculateHash() => HashCode.Combine(Name, IfUnused, IfEmpty);
 
         internal DeleteQueueOperation SetName(string value)
         {

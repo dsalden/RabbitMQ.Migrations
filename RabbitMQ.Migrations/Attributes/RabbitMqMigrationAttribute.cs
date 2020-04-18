@@ -15,7 +15,7 @@ namespace RabbitMQ.Migrations.Attributes
         /// <param name="prefix">The prefix of this migration.</param>
         public RabbitMqMigrationAttribute(string id, string prefix = null)
         {
-            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+            Guard.ArgumentNotNullOrEmpty(nameof(id), id);
 
             Id = id;
             Prefix = prefix;

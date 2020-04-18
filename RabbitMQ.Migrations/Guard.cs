@@ -31,10 +31,7 @@ namespace RabbitMQ.Migrations
         /// <exception cref="ArgumentException">When the argument contained an empty String</exception>
         public static void ArgumentNotNullOrEmpty(string argumentName, string value)
         {
-            if (value == null)
-            {
-                throw new ArgumentNullException(argumentName);
-            }
+            ArgumentNotNull(argumentName, value);
 
             if (string.IsNullOrEmpty(value))
             {
@@ -53,10 +50,7 @@ namespace RabbitMQ.Migrations
         /// <exception cref="ArgumentException">When the argument contained an empty List</exception>
         public static void ArgumentNotNullOrEmpty<T>(string argumentName, IReadOnlyCollection<T> items)
         {
-            if (items == null)
-            {
-                throw new ArgumentNullException(argumentName);
-            }
+            ArgumentNotNull(argumentName, items);
 
             if (items.Count == 0)
             {
