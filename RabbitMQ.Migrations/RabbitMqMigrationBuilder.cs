@@ -46,6 +46,18 @@ namespace RabbitMQ.Migrations
             return bindExchangeOperation;
         }
 
+        public UnbindExchangeOperation UnbindExchange(string sourceExchangeName, string destinationExchangeName, string routingKey)
+        {
+            var unbindExchangeOperation = new UnbindExchangeOperation()
+                .SetSourceExchangeName(sourceExchangeName)
+                .SetDestinationExchangeName(destinationExchangeName)
+                .SetRoutingKey(routingKey);
+
+            Operations.Add(unbindExchangeOperation);
+
+            return unbindExchangeOperation;
+        }
+
         public AddQueueOperation AddQueue(string name)
         {
             var addQueueOperation = new AddQueueOperation()
@@ -76,6 +88,18 @@ namespace RabbitMQ.Migrations
             Operations.Add(bindQueueOperation);
 
             return bindQueueOperation;
+        }
+
+        public UnbindQueueOperation UnbindQueue(string queueName, string exchangeName, string routingKey)
+        {
+            var unbindQueueOperation = new UnbindQueueOperation()
+                .SetQueueName(queueName)
+                .SetExchangeName(exchangeName)
+                .SetRoutingKey(routingKey);
+
+            Operations.Add(unbindQueueOperation);
+
+            return unbindQueueOperation;
         }
 
         public MoveDataToQueueOperation MoveDataToQueue(string sourceQueueName, string destinationQueueName)

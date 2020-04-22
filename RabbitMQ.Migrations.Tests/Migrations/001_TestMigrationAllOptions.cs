@@ -26,6 +26,9 @@ namespace RabbitMQ.Migrations.Tests.Migrations
 
             migrationBuilder.DeleteQueue("barDel").SetIfEmpty(true);
             migrationBuilder.DeleteExchange("fooDel").SetIfUnused(true);
+
+            migrationBuilder.UnbindExchange("fooTopic", "fooQueue", "#").AddArgument("foo", "bar");
+            migrationBuilder.UnbindQueue("bar", "fooFan", "#").AddArgument("foo", "bar");
         }
 
         protected override void Down(RabbitMqMigrationBuilder migrationBuilder)
