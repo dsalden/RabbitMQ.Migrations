@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace RabbitMQ.Migrations.Extensions
 {
-    public static class MigrationHistoryExtensions
+    internal static class MigrationHistoryExtensions
     {
         public static MigrationHistoryRowDetails GetMigration(this MigrationHistoryRow historyRow, string migrationName)
         {

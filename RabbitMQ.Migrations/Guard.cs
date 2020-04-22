@@ -6,7 +6,7 @@ namespace RabbitMQ.Migrations
     /// <summary>
     /// Allows a method to guard itself against incorrect parameters, that still pass through the typecheck. For example when a method gets <code>null</code> when you expect a <code>String</code>
     /// </summary>
-    public static class Guard
+    internal static class Guard
     {
         /// <summary>
         /// Guards against null values when a reference type is expected

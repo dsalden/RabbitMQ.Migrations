@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RabbitMQ.Migrations.Helpers
 {
-    public static class HashHelper
+    internal static class HashHelper
     {
         public static string ComputeSha256Hash(object data)
         {

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RabbitMQ.Migrations.Helpers
 {
-    public static class JsonConvertHelper
+    internal static class JsonConvertHelper
     {
         internal static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
         {

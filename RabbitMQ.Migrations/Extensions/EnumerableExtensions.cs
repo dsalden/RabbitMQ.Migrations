@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RabbitMQ.Migrations.Extensions
 {
-    public static class EnumerableExtensions
+    internal static class EnumerableExtensions
     {
         public static void ForEach<T>(this IEnumerable<T> list, Action<T> action)
         {

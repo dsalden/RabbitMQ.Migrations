@@ -1,7 +1,6 @@
-﻿using RabbitMQ.Client;
-using System;
+﻿using Newtonsoft.Json;
+using RabbitMQ.Client;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace RabbitMQ.Migrations.Operations
 {

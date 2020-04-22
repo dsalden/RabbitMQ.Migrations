@@ -2,7 +2,7 @@
 
 namespace RabbitMQ.Migrations.Extensions
 {
-    public static class ListExtensions
+    internal static class ListExtensions
     {
         public static void AddRange<T>(this IList<T> list, IEnumerable<T> items)
         {

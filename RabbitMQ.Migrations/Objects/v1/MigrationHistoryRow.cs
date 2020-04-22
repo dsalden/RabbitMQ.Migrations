@@ -2,7 +2,7 @@
 
 namespace RabbitMQ.Migrations.Objects.v1
 {
-    public class MigrationHistoryRow
+    internal class MigrationHistoryRow
     {
         public MigrationHistoryRow()
         {

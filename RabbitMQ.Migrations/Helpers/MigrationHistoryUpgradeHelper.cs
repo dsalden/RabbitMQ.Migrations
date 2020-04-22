@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace RabbitMQ.Migrations.Helpers
 {
-    public static class MigrationHistoryUpgradeHelper
+    internal static class MigrationHistoryUpgradeHelper
     {
         public static Objects.v2.MigrationHistory UpgradeToV2(Objects.v1.MigrationHistory migrationHistoryV1)
         {

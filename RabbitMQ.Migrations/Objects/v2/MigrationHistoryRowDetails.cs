@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RabbitMQ.Migrations.Objects.v2
 {
-    public class MigrationHistoryRowDetails
+    internal class MigrationHistoryRowDetails
     {
         public MigrationHistoryRowDetails()
         {
