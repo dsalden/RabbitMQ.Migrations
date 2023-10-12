@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
-using RabbitMQ.Fakes;
+using AddUp.RabbitMQ.Fakes;
 using RabbitMQ.Migrations.Objects.v1;
 using System.Linq;
 using System.Text;

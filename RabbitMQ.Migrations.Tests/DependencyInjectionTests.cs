@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RabbitMQ.Client;
-using RabbitMQ.Fakes;
+using AddUp.RabbitMQ.Fakes;
 using RabbitMQ.Migrations.DependencyInjection;
 
 namespace RabbitMQ.Migrations.Tests

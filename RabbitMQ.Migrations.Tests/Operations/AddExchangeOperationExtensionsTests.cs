@@ -1,9 +1,9 @@
-﻿using System.Linq;
+﻿using AddUp.RabbitMQ.Fakes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RabbitMQ.Client;
-using RabbitMQ.Fakes;
 using RabbitMQ.Migrations.Extensions;
 using RabbitMQ.Migrations.Operations;
+using System.Linq;
 
 namespace RabbitMQ.Migrations.Tests.Operations
 {
@@ -41,10 +41,10 @@ namespace RabbitMQ.Migrations.Tests.Operations
                 operation.Execute(connection, string.Empty);
             }
 
-            Assert.AreEqual(1, server.Exchanges.Count);
-            var exchange = server.Exchanges.Values.First();
+            Assert.AreEqual(1, server.Exchanges.Count(x => !string.IsNullOrEmpty(x.Value.Name)));
+            var exchange = server.Exchanges.Values.First(x => !string.IsNullOrEmpty(x.Name));
             Assert.AreEqual(1, exchange.Arguments.Count);
-            Assert.IsTrue(exchange.Arguments.Contains("alternate-exchange"));
+            Assert.IsTrue(exchange.Arguments.ContainsKey("alternate-exchange"));
             Assert.AreEqual("foo", exchange.Arguments["alternate-exchange"]);
         }
     }

@@ -1,7 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using AddUp.RabbitMQ.Fakes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RabbitMQ.Client;
-using RabbitMQ.Fakes;
 using RabbitMQ.Migrations.Operations;
+using System.Linq;
 
 namespace RabbitMQ.Migrations.Tests.Operations
 {
@@ -62,7 +63,7 @@ namespace RabbitMQ.Migrations.Tests.Operations
             }
 
             Assert.AreEqual(1, server.Queues.Count);
-            Assert.AreEqual(1, server.Exchanges.Count);
+            Assert.AreEqual(1, server.Exchanges.Count(x => !string.IsNullOrEmpty(x.Value.Name)));
             //Exchange-to-exchange bindings not supported in fakes...
             //Arguments on bindings not supported in fakes...
         }

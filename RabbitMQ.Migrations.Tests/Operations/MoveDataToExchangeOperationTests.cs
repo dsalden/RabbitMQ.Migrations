@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using AddUp.RabbitMQ.Fakes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RabbitMQ.Client;
-using RabbitMQ.Fakes;
 using RabbitMQ.Migrations.Operations;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +28,8 @@ namespace RabbitMQ.Migrations.Tests.Operations
             var addBarQueueOperation = new AddQueueOperation()
                 .SetName("bar");
             var addFooExchangeOperation = new AddExchangeOperation()
-                .SetName("foo");
+                .SetName("foo")
+                .SetType(ExchangeType.Topic);
             var addTstQueueOperation = new AddQueueOperation()
                 .SetName("tst")
                 .AddQueueBind("foo", "bar");
@@ -49,7 +50,7 @@ namespace RabbitMQ.Migrations.Tests.Operations
                     channel.ExchangeDeclare("", ExchangeType.Direct, true);
                     channel.QueueBind("bar", "", "bar", null);
 
-                    for (int i = 0; i < 10; i++)
+                    for (var i = 0; i < 10; i++)
                     {
                         var props = channel.CreateBasicProperties();
                         props.Headers = new Dictionary<string, object>();

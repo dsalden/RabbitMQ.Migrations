@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using AddUp.RabbitMQ.Fakes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RabbitMQ.Client;
-using RabbitMQ.Fakes;
 using RabbitMQ.Migrations.Operations;
 using System.Linq;
 
@@ -68,7 +68,7 @@ namespace RabbitMQ.Migrations.Tests.Operations
             Assert.IsFalse(queue.IsDurable);
             Assert.IsFalse(queue.IsExclusive);
             Assert.AreEqual(0, queue.Arguments.Count);
-            Assert.AreEqual(0, queue.Bindings.Count);
+            Assert.AreEqual(1, queue.Bindings.Count);
         }
 
         [TestMethod]
@@ -88,11 +88,9 @@ namespace RabbitMQ.Migrations.Tests.Operations
 
             var server = new RabbitServer();
             var connectionFactory = new FakeConnectionFactory(server);
-            using (var connection = connectionFactory.CreateConnection())
-            {
-                exchangeOperation.Execute(connection, string.Empty);
-                operation.Execute(connection, string.Empty);
-            }
+            using var connection = connectionFactory.CreateConnection();
+            exchangeOperation.Execute(connection, string.Empty);
+            operation.Execute(connection, string.Empty);
 
             Assert.AreEqual(1, server.Queues.Count);
             var queue = server.Queues.Values.First();
@@ -103,8 +101,8 @@ namespace RabbitMQ.Migrations.Tests.Operations
             Assert.AreEqual(1, queue.Arguments.Count);
             Assert.IsTrue(queue.Arguments.ContainsKey("foo"));
             Assert.AreEqual("foo-bar", queue.Arguments["foo"]);
-            Assert.AreEqual(1, queue.Bindings.Count);
-            var binding = queue.Bindings.First();
+            Assert.AreEqual(2, queue.Bindings.Count);
+            var binding = queue.Bindings.First(x => !string.IsNullOrEmpty(x.Value.Exchange.Name));
             Assert.AreEqual("foo", binding.Value.Exchange.Name);
             Assert.AreEqual("bar", binding.Value.Queue.Name);
             Assert.AreEqual("#", binding.Value.RoutingKey);

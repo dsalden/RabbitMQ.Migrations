@@ -33,7 +33,7 @@ namespace RabbitMQ.Migrations
             if (result == null) return new MigrationHistory();
 
             model.BasicNack(result.DeliveryTag, false, true);
-            var migrationHistoryJson = Encoding.UTF8.GetString(result.Body);
+            var migrationHistoryJson = Encoding.UTF8.GetString(result.Body.ToArray());
             return EnsureLatestMigrationHistoryVersion(migrationHistoryJson);
         }
 

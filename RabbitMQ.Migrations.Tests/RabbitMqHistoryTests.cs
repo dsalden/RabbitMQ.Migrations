@@ -1,13 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RabbitMQ.Client;
-using RabbitMQ.Fakes;
+using AddUp.RabbitMQ.Fakes;
 using RabbitMQ.Migrations.Exceptions;
 using RabbitMQ.Migrations.Helpers;
 using RabbitMQ.Migrations.Objects.v2;
-using RabbitMQ.Migrations.Operations;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace RabbitMQ.Migrations.Tests
 {

@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using AddUp.RabbitMQ.Fakes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RabbitMQ.Client;
-using RabbitMQ.Fakes;
 using RabbitMQ.Migrations.Operations;
 using System.Collections.Generic;
 using System.Linq;

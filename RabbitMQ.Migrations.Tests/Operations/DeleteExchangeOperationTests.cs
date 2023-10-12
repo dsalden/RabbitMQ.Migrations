@@ -1,7 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using AddUp.RabbitMQ.Fakes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RabbitMQ.Client;
-using RabbitMQ.Fakes;
 using RabbitMQ.Migrations.Operations;
+using System.Linq;
 
 namespace RabbitMQ.Migrations.Tests.Operations
 {
@@ -46,7 +47,7 @@ namespace RabbitMQ.Migrations.Tests.Operations
                 delOperation.Execute(connection, string.Empty);
             }
 
-            Assert.AreEqual(0, server.Exchanges.Count);
+            Assert.AreEqual(0, server.Exchanges.Count(x => !string.IsNullOrEmpty(x.Value.Name)));
         }
     }
 }

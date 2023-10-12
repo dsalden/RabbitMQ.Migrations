@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using AddUp.RabbitMQ.Fakes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RabbitMQ.Client;
-using RabbitMQ.Fakes;
 using RabbitMQ.Migrations.Operations;
 using System.Linq;
 
@@ -63,11 +63,11 @@ namespace RabbitMQ.Migrations.Tests.Operations
                 operation.Execute(connection, string.Empty);
             }
 
-            Assert.AreEqual(1, server.Exchanges.Count);
-            var exchange = server.Exchanges.Values.First();
+            Assert.AreEqual(1, server.Exchanges.Count(x => !string.IsNullOrEmpty(x.Value.Name)));
+            var exchange = server.Exchanges.Values.First(x => !string.IsNullOrEmpty(x.Name));
             Assert.AreEqual("bar", exchange.Name);
             Assert.AreEqual(ExchangeType.Topic, exchange.Type);
-            Assert.IsFalse(exchange.IsAutoDelete);
+            Assert.IsFalse(exchange.AutoDelete);
             Assert.IsFalse(exchange.IsDurable);
             Assert.AreEqual(0, exchange.Arguments.Count);
             Assert.AreEqual(0, exchange.Bindings.Count);
@@ -87,19 +87,17 @@ namespace RabbitMQ.Migrations.Tests.Operations
 
             var server = new RabbitServer();
             var connectionFactory = new FakeConnectionFactory(server);
-            using (var connection = connectionFactory.CreateConnection())
-            {
-                operation.Execute(connection, string.Empty);
-            }
+            using var connection = connectionFactory.CreateConnection();
+            operation.Execute(connection, string.Empty);
 
-            Assert.AreEqual(1, server.Exchanges.Count);
-            var exchange = server.Exchanges.Values.First();
+            Assert.AreEqual(1, server.Exchanges.Count(x => !string.IsNullOrEmpty(x.Value.Name)));
+            var exchange = server.Exchanges.Values.First(x => !string.IsNullOrEmpty(x.Name));
             Assert.AreEqual("bar", exchange.Name);
             Assert.AreEqual(ExchangeType.Topic, exchange.Type);
-            Assert.IsTrue(exchange.IsAutoDelete);
+            Assert.IsTrue(exchange.AutoDelete);
             Assert.IsTrue(exchange.IsDurable);
             Assert.AreEqual(1, exchange.Arguments.Count);
-            Assert.IsTrue(exchange.Arguments.Contains("foo"));
+            Assert.IsTrue(exchange.Arguments.ContainsKey("foo"));
             Assert.AreEqual("foo-bar", exchange.Arguments["foo"]);
             Assert.AreEqual(0, exchange.Bindings.Count);
             //Exchange-to-exchange bindings not supported in fakes...

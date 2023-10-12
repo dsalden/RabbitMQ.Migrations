@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RabbitMQ.Client;
-using RabbitMQ.Fakes;
+using AddUp.RabbitMQ.Fakes;
 using RabbitMQ.Migrations.Helpers;
 using RabbitMQ.Migrations.Objects.v2;
 using RabbitMQ.Migrations.Operations;
@@ -30,7 +30,7 @@ namespace RabbitMQ.Migrations.Tests
         {
             _rabbitMqHistory.Init();
 
-            Assert.AreEqual(0, _rabbitServer.Exchanges.Count);
+            Assert.AreEqual(0, _rabbitServer.Exchanges.Count(x => !string.IsNullOrEmpty(x.Value.Name)));
             Assert.AreEqual(1, _rabbitServer.Queues.Count);
         }
 
@@ -119,7 +119,7 @@ namespace RabbitMQ.Migrations.Tests
                 var message = channel.BasicGet(Constants.HistoryQueue, true);
                 Assert.IsNotNull(message);
 
-                var migrationHistory = JsonConvertHelper.DeserializeObject<MigrationHistory>(message.Body);
+                var migrationHistory = JsonConvertHelper.DeserializeObject<MigrationHistory>(message.Body.ToArray());
                 Assert.IsNotNull(migrationHistory);
                 Assert.AreEqual(1, migrationHistory.AllMigrations.Count);
                 var migration = migrationHistory.AllMigrations.First();
@@ -148,7 +148,7 @@ namespace RabbitMQ.Migrations.Tests
                 var message = channel.BasicGet(Constants.HistoryQueue, true);
                 Assert.IsNotNull(message);
 
-                var migrationHistory = JsonConvertHelper.DeserializeObject<MigrationHistory>(message.Body);
+                var migrationHistory = JsonConvertHelper.DeserializeObject<MigrationHistory>(message.Body.ToArray());
                 Assert.IsNotNull(migrationHistory);
                 Assert.AreEqual(1, migrationHistory.AllMigrations.Count);
                 var migration = migrationHistory.AllMigrations.First();

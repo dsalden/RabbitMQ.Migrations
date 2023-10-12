@@ -1,7 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RabbitMQ.Client;
-using RabbitMQ.Fakes;
+using AddUp.RabbitMQ.Fakes;
 using RabbitMQ.Migrations.Objects.v2;
 using RabbitMQ.Migrations.Operations;
 using System.Collections.Generic;
@@ -27,8 +27,8 @@ namespace RabbitMQ.Migrations.Tests
             var migrator = new RabbitMqMigrator(connectionFactory, history.Object);
             migrator.UpdateModel("UnitTest");
 
-            Assert.AreEqual(1, rabbitServer.Exchanges.Count);
-            Assert.AreEqual(1, rabbitServer.Queues.Count);
+            Assert.AreEqual(1, rabbitServer.Exchanges.Count(x => !string.IsNullOrEmpty(x.Value.Name)));
+            Assert.AreEqual(2, rabbitServer.Queues.Count);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.AppliedMigrations.Count);
@@ -44,7 +44,7 @@ namespace RabbitMQ.Migrations.Tests
 
             var history = new Mock<IRabbitMqHistory>();
             history.Setup(x => x.GetAppliedMigrations(It.IsAny<string>())).Returns<string>(prefix =>
-                new MigrationHistoryRow { Prefix = prefix, AppliedMigrations = new List<MigrationHistoryRowDetails> { new MigrationHistoryRowDetails { Name = "001_TestMigration" } } });
+                new MigrationHistoryRow { Prefix = prefix, AppliedMigrations = new List<MigrationHistoryRowDetails> { new() { Name = "001_TestMigration" } } });
             MigrationHistoryRow result = null;
             history.Setup(x => x.UpdateAppliedMigrations(It.IsAny<MigrationHistoryRow>()))
                 .Callback<MigrationHistoryRow>(x => result = x);
@@ -52,8 +52,8 @@ namespace RabbitMQ.Migrations.Tests
             var migrator = new RabbitMqMigrator(connectionFactory, history.Object);
             migrator.UpdateModel("UnitTest");
 
-            Assert.AreEqual(0, rabbitServer.Exchanges.Count);
-            Assert.AreEqual(0, rabbitServer.Queues.Count);
+            Assert.AreEqual(0, rabbitServer.Exchanges.Count(x => !string.IsNullOrEmpty(x.Value.Name)));
+            Assert.AreEqual(1, rabbitServer.Queues.Count);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.AppliedMigrations.Count);
@@ -74,7 +74,7 @@ namespace RabbitMQ.Migrations.Tests
                     Prefix = prefix,
                     AppliedMigrations = new List<MigrationHistoryRowDetails>
                     {
-                        new MigrationHistoryRowDetails
+                        new()
                         {
                             Name = "001_TestMigration",
                             Hash = "a6964237ffad49ed9492dca9318f9d793c64aa6d6c7645b7c0db0db9f68d3658"
@@ -88,8 +88,8 @@ namespace RabbitMQ.Migrations.Tests
             var migrator = new RabbitMqMigrator(connectionFactory, history.Object);
             migrator.UpdateModel("UnitTest");
 
-            Assert.AreEqual(0, rabbitServer.Exchanges.Count);
-            Assert.AreEqual(0, rabbitServer.Queues.Count);
+            Assert.AreEqual(0, rabbitServer.Exchanges.Count(x => !string.IsNullOrEmpty(x.Value.Name)));
+            Assert.AreEqual(1, rabbitServer.Queues.Count);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.AppliedMigrations.Count);
@@ -111,7 +111,7 @@ namespace RabbitMQ.Migrations.Tests
                     Prefix = prefix,
                     AppliedMigrations = new List<MigrationHistoryRowDetails>
                     {
-                        new MigrationHistoryRowDetails
+                        new()
                         {
                             Name = "001_TestMigration",
                             Hash = "bla"
@@ -125,8 +125,8 @@ namespace RabbitMQ.Migrations.Tests
             var migrator = new RabbitMqMigrator(connectionFactory, history.Object);
             migrator.UpdateModel("UnitTest");
 
-            Assert.AreEqual(1, rabbitServer.Exchanges.Count);
-            Assert.AreEqual(1, rabbitServer.Queues.Count);
+            Assert.AreEqual(1, rabbitServer.Exchanges.Count(x => !string.IsNullOrEmpty(x.Value.Name)));
+            Assert.AreEqual(2, rabbitServer.Queues.Count);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.AppliedMigrations.Count);
@@ -150,8 +150,8 @@ namespace RabbitMQ.Migrations.Tests
             var migrator = new RabbitMqMigrator(connectionFactory, history.Object);
             migrator.UpdateModel("AllOptionsTest");
 
-            Assert.AreEqual(4, rabbitServer.Exchanges.Count);
-            Assert.AreEqual(2, rabbitServer.Queues.Count);
+            Assert.AreEqual(4, rabbitServer.Exchanges.Count(x => !string.IsNullOrEmpty(x.Value.Name)));
+            Assert.AreEqual(3, rabbitServer.Queues.Count);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.AppliedMigrations.Count);
@@ -178,8 +178,8 @@ namespace RabbitMQ.Migrations.Tests
                     Prefix = prefix,
                     AppliedMigrations = new List<MigrationHistoryRowDetails>
                     {
-                        new MigrationHistoryRowDetails { Name = "001_TestMigration" },
-                        new MigrationHistoryRowDetails
+                        new() { Name = "001_TestMigration" },
+                        new()
                         {
                             Name = "002_TestMigration",
                             Hash = "a6964237ffad49ed9492dca9318f9d793c64aa6d6c7645b7c0db0db9f68d3659",
@@ -198,8 +198,8 @@ namespace RabbitMQ.Migrations.Tests
             var migrator = new RabbitMqMigrator(connectionFactory, history.Object);
             migrator.UpdateModel("UnitTest");
 
-            Assert.AreEqual(0, rabbitServer.Exchanges.Count);
-            Assert.AreEqual(0, rabbitServer.Queues.Count);
+            Assert.AreEqual(0, rabbitServer.Exchanges.Count(x => !string.IsNullOrEmpty(x.Value.Name)));
+            Assert.AreEqual(1, rabbitServer.Queues.Count);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.AppliedMigrations.Count);
@@ -233,8 +233,8 @@ namespace RabbitMQ.Migrations.Tests
             var migrator = new RabbitMqMigrator(connectionFactory, history.Object);
             migrator.RevertAll("UnitTest");
 
-            Assert.AreEqual(0, rabbitServer.Exchanges.Count);
-            Assert.AreEqual(0, rabbitServer.Queues.Count);
+            Assert.AreEqual(0, rabbitServer.Exchanges.Count(x => !string.IsNullOrEmpty(x.Value.Name)));
+            Assert.AreEqual(1, rabbitServer.Queues.Count);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.AppliedMigrations.Count);

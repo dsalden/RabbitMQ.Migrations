@@ -9,7 +9,7 @@ namespace RabbitMQ.Migrations.Demo
         public static void Main()
         {
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IConnectionFactory>(new ConnectionFactory { HostName = "192.168.0.16" });
+            serviceCollection.AddSingleton<IConnectionFactory>(new ConnectionFactory { HostName = "192.168.0.16", VirtualHost = "Polaris"});
             serviceCollection.AddRabbitMqMigrations();
             var serviceProvider = serviceCollection.BuildServiceProvider(true);
 
